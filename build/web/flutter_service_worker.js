@@ -380,7 +380,6 @@ const RESOURCES = {
 "assets/fonts/MaterialIcons-Regular.ttf": "56d3ffdef7a25659eab6a68a3fbfaf16",
 "assets/fonts/Musisync-KVLZ.ttf": "21c3d12f3e3ccbae6bd5441f77538930",
 "assets/fonts/Musisync-qYy6.ttf": "7663fd6b156c6882e4b66bd72556e0ee",
-"assets/LICENSE": "d9c13e2b24c325c92af913b7a5edd6d4",
 "assets/NOTICES": "d7a41500750f1ecedd7dfb28eabb1aec",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "115e937bb829a890521f72d2e664b632",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
@@ -388,7 +387,7 @@ const RESOURCES = {
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "index.html": "d9502075cca6c48207ceb8bc87b323cb",
 "/": "d9502075cca6c48207ceb8bc87b323cb",
-"main.dart.js": "db6788cd839b1a7e0c07ec695b064931",
+"main.dart.js": "e2d20cdb83d04c6160f80ffea5a5d633",
 "manifest.json": "5c363b8fb1aa9ef207b2567ae5540884"
 };
 
