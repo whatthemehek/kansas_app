@@ -11,26 +11,16 @@ void main() {
   runApp(MyApp());
 }
 
-final List<List<int>> boxRhythmNums = [[], [], []];
-final List<List<int>> vibrateRhythmNums = [[250], [250], [250]];
+final List<List<int>> boxRhythmNums = [[], [], [], [],];
+final List<List<int>> vibrateRhythmNums = [[250], [250], [250], [250]];
 
 
-final List<int> howFullNums = [0, 0, 0];
+final List<int> howFullNums = [0];
 
-var currentListNums = [[], [], []];
+var currentListNums = [[], [], [], []];
 var isAccessible = false;
 
-Function _enableAddMeasure() {
-  bool isButtonEnabled = howFullNums.length < 8;
-  if (isButtonEnabled) {
-    return () {
-      howFullNums.add(0);
-      print(howFullNums);
-    };
-  } else {
-      return null;
-  }
-}
+
 
 
 class MyApp extends StatelessWidget {
@@ -67,37 +57,40 @@ class BackgroundWidget extends StatefulWidget {
 }
 
 
-List<bool> successfulDropNums = [null, null, null, null, null, null, null, null];
+List<bool> successfulDropNums = [null, null, null, null];
 
 class _BackgroundWidgetState extends State<BackgroundWidget> {
   final Data boxData;
   _BackgroundWidgetState({this.boxData});
   @override
+
   Widget build(BuildContext context) {
     return Row (
-      children: [
-        for (int i = 0; i < howFullNums.length; i++)
-        DragTarget<int>
-        (builder: (BuildContext context, List<int> incoming, List rejected) {
-          if (successfulDropNums[i] == true) {
-            return MeasureBoxWidget(boxData: boxData, measureNumber: 1 + i);
-          } else {
-            return MeasureBoxWidget(boxData: boxData, measureNumber: 1 + i);
-          }
-        },
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          for (int i = 0; i < howFullNums.length; i++)
+          Center (
+              child: DragTarget<int>
+              (builder: (BuildContext context, List<int> incoming, List rejected) {
+                if (successfulDropNums[i] == true) {
+                  return MeasureBoxWidget(boxData: boxData, measureNumber: 1 + i);
+                } else {
+                  return MeasureBoxWidget(boxData: boxData, measureNumber: 1 + i);
+                }
+              },
 
-        onAccept: (data) {
-          setState(() {
-            successfulDropNums[i] = true;
-            howFullNums[i] = howFullNums[i] - boxData.listOfDurations[boxData.listOfNames.indexOf(currentListNums[i][data])];
-            currentListNums[i].removeAt(data);
-          });
-        },
-        onLeave: (data) {
+              onAccept: (data) {
+                setState(() {
+                  successfulDropNums[i] = true;
+                  howFullNums[i] = howFullNums[i] - boxData.listOfDurations[boxData.listOfNames.indexOf(currentListNums[i][data])];
+                  currentListNums[i].removeAt(data);
+                });
+              },
+              onLeave: (data) {
 
-        }),
-
-      ]
+              }),
+          )
+        ]
     );
   }
 }
@@ -338,6 +331,17 @@ class _FirstPageWidgetState extends State<FirstPage> {
         });
       };
     }
+    Function _enableAddMeasure() {
+      bool isButtonEnabled = howFullNums.length < 4;
+      if (isButtonEnabled) {
+        return () {
+          setState(() {
+            howFullNums.add(0);
+            print(howFullNums);
+          });
+        };
+      }
+    }
     if (isAccessible) {
       return Scaffold(
         appBar: AppBar(
@@ -368,8 +372,8 @@ class _FirstPageWidgetState extends State<FirstPage> {
               ),
               IconButton(
                 iconSize: 80.0,
-                icon: Icon(Icons.play_circle_filled),
-                color: Colors.blue,
+                icon: Icon(Icons.add),
+                color: Colors.red,
                 disabledColor: Colors.grey,
                 onPressed: _enableAddMeasure(),
                 tooltip: "Add Measure",
@@ -485,8 +489,8 @@ class _FirstPageWidgetState extends State<FirstPage> {
               ),
               IconButton(
                 iconSize: 80.0,
-                icon: Icon(Icons.play_circle_filled),
-                color: Colors.blue,
+                icon: Icon(Icons.add),
+                color: Colors.red,
                 disabledColor: Colors.grey,
                 onPressed: _enableAddMeasure(),
                 tooltip: "Add Measure",
