@@ -22,13 +22,13 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
+  uses-material-design: true
   fonts:
     - family: Musisync
       fonts:
         - asset: fonts/Musisync-KVLZ.ttf
         - asset: fonts/Musisync-qYy6.ttf
 
-  uses-material-design: true
 
   assets:
     - assets/sounds/

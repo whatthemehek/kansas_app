@@ -125,7 +125,6 @@ void _vibrate(List<int> vibrateRhythm, List<int> boxRhythm) async {
       }
     }
     Vibration.vibrate(pattern: vibrateRhythm);
-    print(vibrateRhythm);
   }
 }
 
@@ -140,7 +139,6 @@ class _MBWidgetState extends State<MeasureBoxWidget> {
   bool isButtonEnabled;
   Function _enablePlayButton() {
     isButtonEnabled = (howFullNums[measureNumber - 1] == boxData.maxFull);
-    print(isButtonEnabled);
     if (isButtonEnabled) {
       return () {
         boxRhythmNums[measureNumber - 1].clear();
@@ -332,12 +330,21 @@ class _FirstPageWidgetState extends State<FirstPage> {
       };
     }
     Function _enableAddMeasure() {
-      bool isButtonEnabled = howFullNums.length < 4;
+      bool isButtonEnabled = (howFullNums.length < 4) && !isAccessible;
       if (isButtonEnabled) {
         return () {
           setState(() {
             howFullNums.add(0);
-            print(howFullNums);
+          });
+        };
+      }
+    }
+    Function _enableRemoveMeasure() {
+      bool isButtonEnabled = (howFullNums.length > 1) && !isAccessible;
+      if (isButtonEnabled) {
+        return () {
+          setState(() {
+            howFullNums.removeAt(howFullNums.length - 1);
           });
         };
       }
@@ -370,18 +377,10 @@ class _FirstPageWidgetState extends State<FirstPage> {
                       ]
                   )
               ),
-              IconButton(
-                iconSize: 80.0,
-                icon: Icon(Icons.add),
-                color: Colors.red,
-                disabledColor: Colors.grey,
-                onPressed: _enableAddMeasure(),
-                tooltip: "Add Measure",
-              ),
               Expanded(
                   child: Container(
                     color: Color(0xffe4e1),
-                    child: MeasureBoxWidget(boxData: boxData),
+                    child: MeasureBoxWidget(boxData: boxData, measureNumber: 1),
                   )
               ),
             ]// Children
@@ -399,45 +398,30 @@ class _FirstPageWidgetState extends State<FirstPage> {
               ListTile(
                 title: Text('Kindergarten and First Grade'),
                 onTap: () {
-                  for (int i; i < boxRhythmNums.length; i++) {
-                    boxRhythmNums[i].clear();
-                  }
                   Navigator.pushNamed(context, '/k1');
                 },
               ),
               ListTile(
                 title: Text('Second Grade'),
                 onTap: () {
-                  for (int i; i < boxRhythmNums.length; i++) {
-                    boxRhythmNums[i].clear();
-                  }
                   Navigator.pushNamed(context, '/second');
                 },
               ),
               ListTile(
                 title: Text('Third Grade'),
                 onTap: () {
-                  for (int i; i < boxRhythmNums.length; i++) {
-                    boxRhythmNums[i].clear();
-                  }
                   Navigator.pushNamed(context, '/third');
                 },
               ),
               ListTile(
                 title: Text('Fourth Grade'),
                 onTap: () {
-                  for (int i; i < boxRhythmNums.length; i++) {
-                    boxRhythmNums[i].clear();
-                  }
                   Navigator.pushNamed(context, '/fourth');
                 },
               ),
               ListTile(
                 title: Text('Fifth Grade'),
                 onTap: () {
-                  for (int i; i < boxRhythmNums.length; i++) {
-                    boxRhythmNums[i].clear();
-                  }
                   Navigator.pushNamed(context, '/fifth');
                 },
               ),
@@ -487,14 +471,28 @@ class _FirstPageWidgetState extends State<FirstPage> {
                       ]
                   )
               ),
-              IconButton(
-                iconSize: 80.0,
-                icon: Icon(Icons.add),
-                color: Colors.red,
-                disabledColor: Colors.grey,
-                onPressed: _enableAddMeasure(),
-                tooltip: "Add Measure",
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    iconSize: 80.0,
+                    icon: Icon(Icons.add_circle_sharp),
+                    color: Colors.red,
+                    disabledColor: Colors.grey,
+                    onPressed: _enableAddMeasure(),
+                    tooltip: "Add Measure",
+                  ),
+                  IconButton(
+                    iconSize: 80.0,
+                    icon: Icon(Icons.remove_circle),
+                    color: Colors.red,
+                    disabledColor: Colors.grey,
+                    onPressed: _enableRemoveMeasure(),
+                    tooltip: "Remove Measure",
+                  ),
+                ]
               ),
+
               Expanded(
                   child: Container(
                     color: Color(0xffe4e1),
@@ -516,45 +514,30 @@ class _FirstPageWidgetState extends State<FirstPage> {
               ListTile(
                 title: Text('Kindergarten and First Grade'),
                 onTap: () {
-                  for (int i; i < boxRhythmNums.length; i++) {
-                    boxRhythmNums[i].clear();
-                  }
                   Navigator.pushNamed(context, '/k1');
                 },
               ),
               ListTile(
                 title: Text('Second Grade'),
                 onTap: () {
-                  for (int i; i < boxRhythmNums.length; i++) {
-                    boxRhythmNums[i].clear();
-                  }
                   Navigator.pushNamed(context, '/second');
                 },
               ),
               ListTile(
                 title: Text('Third Grade'),
                 onTap: () {
-                  for (int i; i < boxRhythmNums.length; i++) {
-                    boxRhythmNums[i].clear();
-                  }
                   Navigator.pushNamed(context, '/third');
                 },
               ),
               ListTile(
                 title: Text('Fourth Grade'),
                 onTap: () {
-                  for (int i; i < boxRhythmNums.length; i++) {
-                    boxRhythmNums[i].clear();
-                  }
                   Navigator.pushNamed(context, '/fourth');
                 },
               ),
               ListTile(
                 title: Text('Fifth Grade'),
                 onTap: () {
-                  for (int i; i < boxRhythmNums.length; i++) {
-                    boxRhythmNums[i].clear();
-                  }
                   Navigator.pushNamed(context, '/fifth');
                 },
               ),
