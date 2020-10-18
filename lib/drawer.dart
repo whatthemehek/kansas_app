@@ -14,21 +14,33 @@ class BoxDrawer extends StatelessWidget{
             ),
           ),
           ListTile(
-            title: Text('Measure Box'),
+            title: Text('K-1'),
             onTap: () {
-              Navigator.pushNamed(context, '/measure');
+              Navigator.pushNamed(context, '/k1');
             },
           ),
           ListTile(
-            title: Text('Beat Box'),
+            title: Text('Second Grade'),
             onTap: () {
-              Navigator.pushNamed(context, '/beat');
+              Navigator.pushNamed(context, '/second');
             },
           ),
           ListTile(
-            title: Text('3/4 Box'),
+            title: Text('Third Grade'),
             onTap: () {
-              Navigator.pushNamed(context, '/threeFour');
+              Navigator.pushNamed(context, '/third');
+            },
+          ),
+          ListTile(
+            title: Text('Fourth Grade'),
+            onTap: () {
+              Navigator.pushNamed(context, '/fourth');
+            },
+          ),
+          ListTile(
+            title: Text('Fifth Grade'),
+            onTap: () {
+              Navigator.pushNamed(context, '/fifth');
             },
           ),
           ListTile(
