@@ -3,6 +3,9 @@ part of 'main.dart';
 final n = 3.0;
 
 final List<List<int>> boxRhythmNums = [[], [], [], []];
+final List<List<Color>> rhythmColorLists = [[], [], [], []];
+final List<List<Color>> pulseColors = [[], [], [], []];
+final List<List<double>> pulseDurations = [[], [], [], []];
 final List<List<int>> vibrateRhythmNums = [[250], [250], [250], [250]];
 
 
@@ -10,6 +13,7 @@ final List<int> howFullNums = [0];
 
 var currentListNums = [[], [], [], []];
 var isAccessible = false;
+var isKodaly = false;
 int currentMeasureNum = 1;
 
 List<bool> successfulDropNums = [null, null, null, null];

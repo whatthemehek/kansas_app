@@ -1,56 +1,53 @@
 part of 'main.dart';
 
-class BoxDrawer extends StatelessWidget{
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            child: Text('Menu'),
-            decoration: BoxDecoration(
-              color: Colors.white,
-            ),
-          ),
-          ListTile(
-            title: Text('K-1'),
-            onTap: () {
-              Navigator.pushNamed(context, '/k1');
-            },
-          ),
-          ListTile(
-            title: Text('Second Grade'),
-            onTap: () {
-              Navigator.pushNamed(context, '/second');
-            },
-          ),
-          ListTile(
-            title: Text('Third Grade'),
-            onTap: () {
-              Navigator.pushNamed(context, '/third');
-            },
-          ),
-          ListTile(
-            title: Text('Fourth Grade'),
-            onTap: () {
-              Navigator.pushNamed(context, '/fourth');
-            },
-          ),
-          ListTile(
-            title: Text('Fifth Grade'),
-            onTap: () {
-              Navigator.pushNamed(context, '/fifth');
-            },
-          ),
-          ListTile(
-            title: Text('Privacy Policy'),
-            onTap: () {
-              Navigator.pushNamed(context, '/privacy');
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
+//class BoxDrawer extends StatelessWidget{
+//  @override
+//  Widget build(BuildContext context) {
+//    return Drawer(
+//      child: ListView(
+//        padding: EdgeInsets.zero,
+//        children: <Widget>[
+//          DrawerHeader(
+//            child: Text('Menu'),
+//            decoration: BoxDecoration(
+//              color: Colors.white,
+//            ),
+//          ),
+//          ListTile(
+//            title: Text('Measure Box'),
+//            onTap: () {
+//              Navigator.pushNamed(context, '/measure');
+//            },
+//          ),
+//          ListTile(
+//            title: Text('Beat Box'),
+//            onTap: () {
+//              Navigator.pushNamed(context, '/beat');
+//            },
+//          ),
+//          ListTile(
+//            title: Text('3/4 Box'),
+//            onTap: () {
+//              Navigator.pushNamed(context, '/threeFour');
+//            },
+//          ),
+//          ListTile(
+//            title: Text('Privacy Policy'),
+//            onTap: () {
+//              Navigator.pushNamed(context, '/privacy');
+//            },
+//          ),
+//          SwitchListTile(
+//            title: Text('Screen-reader Optimized'),
+//            value: isAccessible,
+//            onChanged: (bool value) {
+//              setState(() {
+//                isAccessible = value;
+//              });
+//            },
+//          ),
+//        ],
+//      ),
+//    );
+//  }
+//}

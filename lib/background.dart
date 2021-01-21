@@ -29,19 +29,21 @@ class _BackgroundWidgetState extends State<BackgroundWidget> {
                   children: [
                     for (int i = 0; i < howFullNums.length; i++)
                       Center (
-                        child: MeasureBoxWidget(boxData: boxData, measureNumber: 1 + i),
+                        child: MeasureBoxWidget(boxData: boxData, measureNumber: 1 + i, duration: 1000),
                       )
                   ]
               ),
-              Container (
-                height: 200,
-                width: MediaQuery.of(context).size.width,
-                color: Colors.blue,
-                child: Icon(
-                  Icons.delete_outline,
-                  color: Colors.white,
-                  size: 50.0,
-                ),
+              Expanded(
+                child: Container (
+                  height: 200,
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.blue,
+                  child: Icon(
+                    Icons.delete_outline,
+                    color: Colors.white,
+                    size: 50.0,
+                  ),
+                )
               )
             ]
         );

@@ -3,17 +3,19 @@ part of 'main.dart';
 class MeasureBoxWidget extends StatefulWidget {
   final Data boxData;
   final int measureNumber;
-  MeasureBoxWidget({this.boxData, this.measureNumber});
+  final int duration;
+  MeasureBoxWidget({Key key, this.boxData, this.measureNumber, this.duration}) : super(key: key);
   @override
-  //MeasureBoxWidget({Key key}) : super(key: key);
-  _MBWidgetState createState() => _MBWidgetState(boxData: boxData, measureNumber: measureNumber);
+  _MBWidgetState createState() => _MBWidgetState(boxData: boxData, measureNumber: measureNumber, duration: duration);
   Widget build(BuildContext context) {
 
   }
 }
 
+//String baseURL =
 
-final AudioCache player = new AudioCache(prefix: 'sounds/');
+final AudioCache player = new AudioCache(prefix: 'sounds_mp3/');
+
 
 void _vibrate(List<int> vibrateRhythm, List<int> boxRhythm) async {
   if (await Vibration.hasVibrator() && await Vibration.hasCustomVibrationsSupport()) {
@@ -34,39 +36,126 @@ void _vibrate(List<int> vibrateRhythm, List<int> boxRhythm) async {
 }
 
 
+String _canPlay = 'Measure not full: Fill to play';
 
 
-class _MBWidgetState extends State<MeasureBoxWidget> {
+
+class _MBWidgetState extends State<MeasureBoxWidget> with TickerProviderStateMixin{
   final Data boxData;
   final int measureNumber;
-  _MBWidgetState({this.boxData, this.measureNumber});
+  final int duration;
+  _MBWidgetState({this.boxData, this.measureNumber, this.duration});
   @override
   bool isButtonEnabled;
+  Widget pulseUsing = Container();
+
+  int _duration;
+  AnimationController animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _duration = widget.duration;
+    animationController = AnimationController(
+        duration: Duration(milliseconds: _duration),
+        vsync: this
+    );
+  }
+
+  @override
+  void didUpdateWidget(MeasureBoxWidget oldWidget) {
+    setState(() {
+      _duration = widget.duration;
+    });
+
+    updateController(oldWidget);
+    super.didUpdateWidget(oldWidget);
+  }
+
+
+  void updateController(MeasureBoxWidget oldWidget){
+    if(oldWidget.duration != _duration){
+      animationController.dispose();
+      animationController = AnimationController(duration: Duration(milliseconds: _duration), vsync:this);
+    }
+  }
+
+  Widget pulser(List<List<double>> pulseDurations, List<List<Color>> pulseColors) {
+        return Stack(
+          children: [
+            for (int i = 0; i < pulseColors[measureNumber - 1].length; i++)
+              SpinKitPulse(
+                color: pulseColors[measureNumber - 1][i],
+                size: 400.0,
+                intervalOne: pulseDurations[measureNumber - 1][i*2],
+                intervalTwo: pulseDurations[measureNumber - 1][i*2 + 1],
+                controller: AnimationController(
+                  vsync: this,
+                  duration: Duration(milliseconds: 4000),
+                ),
+              )
+          ],
+        );
+  }
+
+  String baseURL = "https://storage.googleapis.com/mehek_box_sounds/kodaly_mp3/";
+
+  play(String path) async {
+    AudioPlayer audioPlayer = AudioPlayer();
+    await audioPlayer.setUrl(path);
+    int result = await audioPlayer.play(path);
+  }
+
   Function _enablePlayButton() {
     isButtonEnabled = (howFullNums[measureNumber - 1] == boxData.maxFull);
     if (isButtonEnabled) {
+      _canPlay = 'Measure is full: Can Play';
       return () {
+        pulseDurations[measureNumber - 1].clear();
+        pulseColors[measureNumber - 1].clear();
+        rhythmColorLists[measureNumber - 1].clear();
         boxRhythmNums[measureNumber - 1].clear();
         for (var l in currentListNums[measureNumber - 1]) {
           boxRhythmNums[measureNumber - 1].addAll(boxData.rhythmArrays[boxData.listOfNames.indexOf(l)]);
+          for (int i = 0; i < boxData.rhythmArrays[boxData.listOfNames.indexOf(l)].length; i++) {
+            rhythmColorLists[measureNumber - 1].add(boxData.listOfColors[boxData.listOfNames.indexOf(l)]);
+          }
         }
         player.clearCache();
         List<String> loadAllArray = [];
+        double lastTime = 0.0;
         for (int i = 0; i < boxRhythmNums[measureNumber - 1].length; i++) {
-          loadAllArray.add('Index'+ (i + 1).toString() + 'Length' + boxRhythmNums[measureNumber - 1][i].toString() + '.wav');
+          loadAllArray.add(baseURL + 'Index'+ (i + 1).toString() + 'Length' + boxRhythmNums[measureNumber - 1][i].toString() + '.mp3');
+          pulseDurations[measureNumber - 1].add(lastTime);
+          pulseDurations[measureNumber - 1].add(lastTime + boxRhythmNums[measureNumber - 1][i] / 16.0);
+          lastTime = lastTime + boxRhythmNums[measureNumber - 1][i] / 16.0;
+          pulseColors[measureNumber - 1].add(rhythmColorLists[measureNumber - 1][i]);
           if (boxRhythmNums[measureNumber - 1][i] != 0) {
             i = i + boxRhythmNums[measureNumber - 1][i] - 1;
           }
         }
-        player.load('metronome.wav');
-        player.loadAll(loadAllArray);
-        player.play('metronome.wav');
+//        player.load('metronome.mp3');
+//        player.loadAll(loadAllArray);
+//        player.play('metronome.mp3');
         _vibrate(vibrateRhythmNums[measureNumber - 1], boxRhythmNums[measureNumber - 1]);
-        for (String j in loadAllArray) {
-          player.play(j);
-        }
+        setState(()  {
+          play(baseURL + 'metronome.mp3');
+          for (String j in loadAllArray) {
+            //player.play(j);
+            play(j);
+          }
+          setState(() {
+            pulseUsing = pulser(pulseDurations, pulseColors);
+          });
+          Future.delayed(Duration(milliseconds: 4000), () {
+            setState(() {
+                pulseUsing = Container();
+            });
+          });
+        });
       };
     } else {
+      _canPlay = 'Measure not full: Fill to play';
       return null;
     }
   }
@@ -81,6 +170,11 @@ class _MBWidgetState extends State<MeasureBoxWidget> {
     };
   }
 
+
+
+
+
+
   Widget build(BuildContext context) {
     if (isAccessible) {
       return Container(
@@ -88,100 +182,111 @@ class _MBWidgetState extends State<MeasureBoxWidget> {
               children: [
                 Center(
                   //Draws the box, with the right size
-                    child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                            width: 1,
-                          ),
-                        ),
-                        child: Container(
-                            height: boxData.boxHeight * n,
-                            width: boxData.boxWidth * n,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        pulseUsing,
+                        Container(
                             decoration: BoxDecoration(
-                              color: Color(0xc9c9c9),
                               border: Border.all(
-                                color: Colors.white,
-                                width: 2 * n,
+                                color: Colors.grey,
+                                width: 1,
                               ),
                             ),
-                            // Draws the blocks currently in the box
-                            child: Center(
-                                child: Row(
-                                  children: [
-                                    for (int i = 0; i < currentListNums[measureNumber - 1].length; i++)
-                                      Container (
-                                          width: boxData.listOfWidths[boxData.listOfNames.indexOf(currentListNums[measureNumber - 1][i])]*n,
-                                          height:(boxData.boxHeight - 4)*n,
-                                          child: RawMaterialButton(
-                                            onPressed: _removeRhythm(i, boxData.listOfNames.indexOf(currentListNums[measureNumber - 1][i])),
-                                            padding: EdgeInsets.all(0),
-                                            child: Tooltip(message: currentListNums[measureNumber - 1][i],
-                                                child: boxData.listOfContainers[boxData.listOfNames.indexOf(currentListNums[measureNumber - 1][i])]),
+                            child: Container(
+                                height: boxData.boxHeight * n,
+                                width: boxData.boxWidth * n,
+                                decoration: BoxDecoration(
+                                  color: Color(0xc9c9c9),
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2 * n,
+                                  ),
+                                ),
+                                // Draws the blocks currently in the box
+                                child: Center(
+                                    child: Row(
+                                      children: [
+                                        for (int i = 0; i < currentListNums[measureNumber - 1].length; i++)
+                                          Container (
+                                              width: boxData.listOfWidths[boxData.listOfNames.indexOf(currentListNums[measureNumber - 1][i])]*n,
+                                              height:(boxData.boxHeight - 4)*n,
+                                              child: RawMaterialButton(
+                                                onPressed: _removeRhythm(i, boxData.listOfNames.indexOf(currentListNums[measureNumber - 1][i])),
+                                                padding: EdgeInsets.all(0),
+                                                child: Tooltip(message: currentListNums[measureNumber - 1][i],
+                                                    child: boxData.listOfContainers[boxData.listOfNames.indexOf(currentListNums[measureNumber - 1][i])]),
+                                              )
                                           )
-                                      )
-                                  ],
+                                      ],
+                                    )
                                 )
                             )
-                        )
-                    )
+                        ),
+                      ]
+                    ),
                 ),
                 Container(
-                  child: IconButton(
-                    iconSize: 80.0,
-                    icon: Icon(Icons.play_circle_filled),
-                    color: Colors.blue,
-                    disabledColor: Colors.grey,
-                    onPressed: _enablePlayButton(),
-                    tooltip: "Play Rhythm",
-                  ),
-                )
-              ]
+                  child: Semantics(
+                    label: 'Play Button',
+                    value: _canPlay,
+                    child: IconButton(
+                      iconSize: 80.0,
+                      icon: Icon(Icons.play_circle_filled),
+                      color: Colors.blue,
+                      disabledColor: Colors.grey,
+                      onPressed: _enablePlayButton(),
+                    ),
+                  )
+                )]
           )
       );
     } else {
-      return DragTarget<String>(
-        builder: (BuildContext context, List<String> incoming, List rejected) {
+      return DragTarget<String>(builder: (BuildContext context, List<String> incoming, List rejected) {
           return Column (
               children: [
-                Center (
-                  //Draws the box, with the right size
-                    child: Container (
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    pulseUsing,
+                    Container (
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                      ),
+                      child: Container (
+                        height: boxData.boxHeight*n,
+                        width: boxData.boxWidth*n,
                         decoration: BoxDecoration(
+                          color: Color(0xc9c9c9),
                           border: Border.all(
-                            color: Colors.grey,
-                            width: 1,
+                            color: Colors.white,
+                            width: 2*n,
                           ),
                         ),
-                        child: Container (
-                            height: boxData.boxHeight*n,
-                            width: boxData.boxWidth*n,
-                            decoration: BoxDecoration(
-                              color: Color(0xc9c9c9),
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2*n,
+                        child: Center ( // Draws the blocks currently in the box
+                          child: Row(
+                            children: [
+                              for (var i in currentListNums[measureNumber - 1])
+                              Draggable(
+                                child: boxData.listOfContainers[boxData.listOfNames.indexOf(i)],
+                                feedback: Material (
+                                  child: boxData.listOfContainers[boxData.listOfNames.indexOf(i)],
+                                ),
+                                childWhenDragging: null,
+                                data: ([currentListNums[measureNumber - 1].indexOf(i), measureNumber - 1]),
                               ),
-                            ),
-                            // Draws the blocks currently in the box
-                            child: Center (
-                                child: Row(
-                                  children: [
-                                    for (var i in currentListNums[measureNumber - 1])
-                                      Draggable(
-                                        child: boxData.listOfContainers[boxData.listOfNames.indexOf(i)],
-                                        feedback: Material (
-                                          child: boxData.listOfContainers[boxData.listOfNames.indexOf(i)],
-                                        ),
-                                        childWhenDragging: null,
-                                        data: ([currentListNums[measureNumber - 1].indexOf(i), measureNumber - 1]),
-                                      ),
-                                  ],
-                                )
-                            )
+                            ],
+                          )
                         )
-                    )
+                      )
+                    ),
+
+                  ]
                 ),
+                  //Draws the box, with the right size
                 Container(
                   child: IconButton (
                     iconSize: 80.0,
